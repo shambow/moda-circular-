@@ -123,7 +123,7 @@ function sel(name,opts,cur,attrs=''){
 function visual(p){return p.img?`<img src="${p.img}" alt="">`:`<span>${EMOJI[p.cat]||'👕'}</span>`;}
 function priceLine(p){
   let s='';
-  if(p.mode!=='trueque') s+=`<span class="price">${eur(p.price)}</span> `;
+  if(p.mode!=='trueque') s+=`<span class="price">${Ars(p.price)}</span> `;
   if(p.mode!=='venta') s+=`<span class="pill">⇄ Trueque</span>`;
   return s;
 }
