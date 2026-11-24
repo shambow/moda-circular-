@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circular Moda · Compra, vende e intercambia</title>
+<style>
+:root{--g:#1f7a5c;--g2:#155a43;--bg:#f6f7f4;--card:#fff;--tx:#1d2521;--mut:#6b7570;--line:#e2e6e3;--warn:#c0572b;--r:14px}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:10}
+.bar{max-width:1200px;margin:auto;display:flex;align-items:center;gap:12px;padding:12px 16px;flex-wrap:wrap}
+.logo{font-weight:800;color:var(--g);font-size:20px;cursor:pointer;margin-right:auto}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--tx);font-size:15px}
+nav button:hover,nav button.on{background:#e8f3ee;color:var(--g2)}
+.btn{background:var(--g);color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600}
+.btn:hover{background:var(--g2)}
+.btn.ghost{background:#fff;color:var(--g);border:1px solid var(--g)}
+.btn.danger{background:var(--warn)}
+.btn.sm{padding:6px 10px;font-size:13px}
+main{max-width:1200px;margin:auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:8px 0 10px}
+.hero{background:linear-gradient(135deg,#1f7a5c,#3aa67f);color:#fff;border-radius:var(--r);padding:28px;margin-bottom:20px}
+.hero h1{color:#fff;margin:0 0 8px}
+.hero p{margin:0 0 14px;opacity:.95}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.step b{color:var(--g)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.thumb{height:170px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;top:8px;left:8px;background:#fff;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:600}
+.body{padding:12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.price{font-weight:800;color:var(--g);font-size:18px}
+.mut{color:var(--mut);font-size:13px}
+.pill{display:inline-block;background:#e8f3ee;color:var(--g2);border-radius:999px;padding:2px 9px;font-size:12px;margin:0 4px 6px 0}
+.pill.w{background:#fbeee7;color:var(--warn)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input,select,textarea{font:inherit;padding:10px 12px;border:1px solid #cdd5d0;border-radius:10px;background:#fff;width:100%}
+textarea{min-height:90px;resize:vertical}
+.filters input{flex:1;min-width:200px}
+.filters select{width:auto}
+.form{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px;max-width:720px}
+.form.narrow{max-width:420px;margin:auto}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row>div{display:flex;flex-direction:column;gap:6px}
+label{font-size:14px;font-weight:600}
+.full{grid-column:1/-1}
+@media(max-width:640px){.row{grid-template-columns:1fr}}
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:24px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.detail .thumb{height:340px;font-size:120px;border-radius:12px}
+@media(max-width:800px){.detail{grid-template-columns:1fr}}
+.box{background:#f8faf9;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px}
+.msg{padding:10px 12px;border-radius:10px;font-size:14px;margin:10px 0}
+.msg.ok{background:#e6f5ee;color:#155a43}
+.msg.err{background:#fbe9e2;color:#9a3b17}
+.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:999px;cursor:pointer}
+.tabs button.on{background:var(--g);color:#fff;border-color:var(--g)}
+.tablewrap{overflow-x:auto;background:#fff;border-radius:var(--r);border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+td,th{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:middle}
+th{background:#f3f6f4}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:12px 0}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stat b{display:block;font-size:24px;color:var(--g)}
+.empty{text-align:center;color:var(--mut);padding:40px;background:#fff;border-radius:var(--r);border:1px dashed #cdd5d0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+footer{text-align:center;color:var(--mut);font-size:13px;padding:20px}
+a{color:var(--g)}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="logo" data-act="go" data-v="market">♻️ Circular Moda</div>
+  <nav id="nav"></nav>
+</div></header>
+<main id="app"></main>
+<footer>Circular Moda · Demo funcional. Los datos se guardan en este navegador.</footer>
+<script>
+const KEY='circular-moda-v1';
+const CATS=['Camisetas','Pantalones','Vestidos','Abrigos','Calzado','Accesorios','Bolsos','Infantil'];
+const SIZES=['XS','S','M','L','XL','XXL','Única','Infantil'];
+const CONDS=['Como nuevo','Buen estado','Usado con detalles'];
+const MODES={venta:'Venta',trueque:'Trueque',ambas:'Venta o trueque'};
+const EMOJI={Camisetas:'👕',Pantalones:'👖',Vestidos:'👗',Abrigos:'🧥',Calzado:'👟',Accesorios:'🧣',Bolsos:'👜',Infantil:'🧸'};
+const CO2_PER_ITEM=2.5; // kg de CO₂ evitados por prenda reutilizada (estimación orientativa)
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const $=s=>document.querySelector(s);
+const app=$('#app');
+function seed(){
+  const users=[{id:'u0',name:'Comunidad Circular',email:'demo@circular.com',pass:'demo123',city:'Madrid'}];
+  const now=Date.now();
+  const raw=[
+    ['Vestido midi floral','Vestidos','S','Como nuevo','ambas',28,'Blusa o falda de algodón','Usado dos veces en primavera. Tejido fresco y muy cómodo.'],
+    ['Chaqueta vaquera oversize','Abrigos','L','Buen estado','venta',35,'','Lavada y sin desgaste. Ideal para entretiempo.'],
+    ['Zapatillas blancas','Calzado','42','Buen estado','trueque',0,'Botas de piel talla 42','Suela en muy buen estado.'],
+    ['Bolso de mano de cuero','Bolsos','Única','Como nuevo','venta',45,'','Incluye funda para el polvo.'],
+    ['Pantalón chino beige','Pantalones','M','Usado con detalles','ambas',12,'Camiseta básica M','Pequeña marca en el bajo, apenas se nota.']
+  ];
+  const products=raw.map((r,i)=>({id:'p'+i,ownerId:'u0',title:r[0],cat:r[1],size:r[2],cond:r[3],mode:r[4],price:r[5],wanted:r[6],desc:r[7],brand:'',city:'Madrid',img:null,status:'disponible',createdAt:now-i*1000}));
+  return {users,products,offers:[],session:null};
+}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.users))return d;}catch(e){}
+  return seed();
+}
+let db=load();
+function save(){localStorage.setItem(KEY,JSON.stringify(db));}
+const ui={view:'market',id:null,tab:'pub',f:{q:'',cat:'',mode:'',sort:'new'},flash:null};
+function me(){return db.users.find(u=>u.id===db.session)||null;}
+function prod(id){return db.products.find(p=>p.id===id);}
+function userById(id){return db.users.find(u=>u.id===id);}
+function eur(n){return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n);}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function flash(t,ok=true){ui.flash={t,ok};}
+function sel(name,opts,cur,attrs=''){
+  return `<select name="${name}" ${attrs}>${opts.map(o=>{const [v,l]=Array.isArray(o)?o:[o,o];return `<option value="${esc(v)}" ${String(v)===String(cur)?'selected':''}>${esc(l)}</option>`;}).join('')}</select>`;
+}
+function visual(p){return p.img?`<img src="${p.img}" alt="">`:`<span>${EMOJI[p.cat]||'👕'}</span>`;}
+function priceLine(p){
+  let s='';
+  if(p.mode!=='trueque') s+=`<span class="price">${eur(p.price)}</span> `;
+  if(p.mode!=='venta') s+=`<span class="pill">⇄ Trueque</span>`;
+  return s;
+}
+function card(p){
+  const tag=p.status!=='disponible'?(p.status==='vendido'?'Vendido':'Intercambiado'):MODES[p.mode];
+  return `<div class="card" data-act="go" data-v="product" data-id="${p.id}">
+    <div class="thumb">${visual(p)}<span class="tag">${tag}</span></div>
+    <div class="body"><b>${esc(p.title)}</b>
+    <span class="mut">Talla ${esc(p.size)} · ${esc(p.cond)}${p.city?' · '+esc(p.city):''}</span>
+    <div>${priceLine(p)}</div></div></div>`;
+}
+/* ---------- NAV ---------- */
+function renderNav(){
+  const u=me();
+  const b=(v,t)=>`<button class="${ui.view===v?'on':''}" data-act="go" data-v="${v}">${t}</button>`;
+  $('#nav').innerHTML = b('market','Mercado') + (u
+    ? b('sell','+ Vender') + b('dash','Mi panel') + `<button data-act="logout">Salir (${esc(u.name.split(' ')[0])})</button>`
+    : b('login','Entrar') + b('register','Registrarse'));
+}
+/* ---------- VIEWS ---------- */
+function viewMarket(){
+  const avail=db.products.filter(p=>p.status==='disponible').length;
+  return `
+  <div class="hero">
+    <h1>Moda circular: compra, vende o intercambia</h1>
+    <p>Dale una segunda vida a tu ropa. Hay ${avail} prendas disponibles ahora mismo.</p>
+    ${me()?`<button class="btn" data-act="go" data-v="sell">+ Publicar prenda</button>`
+          :`<button class="btn" data-act="go" data-v="register">Crear cuenta gratis</button>`}
+  </div>
+  <div class="steps">
+    <div class="step"><b>1. Publica</b><br><span class="mut">Sube fotos, talla y estado de tu prenda.</span></div>
+    <div class="step"><b>2. Vende o intercambia</b><br><span class="mut">Acepta ofertas de compra o propuestas de trueque.</span></div>
+    <div class="step"><b>3. Alarga su vida</b><br><span class="mut">Cada prenda reutilizada evita residuos y emisiones.</span></div>
+  </div>
+  <div class="filters">
+    <input placeholder="Buscar prendas, marcas, estilos…" data-filter="q" value="${esc(ui.f.q)}">
+    ${sel('cat',[['','Todas las categorías'],...CATS.map(c=>[c,c])],ui.f.cat,'data-filter="cat"')}
+    ${sel('mode',[['','Todos los tipos'],...Object.entries(MODES)],ui.f.mode,'data-filter="mode"')}
+    ${sel('sort',[['new','Más recientes'],['asc','Precio: menor a mayor'],['desc','Precio: mayor a menor']],ui.f.sort,'data-filter="sort"')}
+  </div>
+  <div id="grid" class="grid"></div>`;
+}
+function drawGrid(){
+  const g=$('#grid'); if(!g) return;
+  const f=ui.f, q=f.q.trim().toLowerCase();
+  let list=db.products.filter(p=>
+    p.status==='disponible' &&
+    (!q || (p.title+' '+p.desc+' '+p.cat+' '+(p.brand||'')).toLowerCase().includes(q)) &&
+    (!f.cat || p.cat===f.cat) &&
+    (!f.mode || p.mode===f.mode || p.mode==='ambas'));
+  const pr=p=>p.mode==='trueque'?1e9:p.price;
+  if(f.sort==='asc') list.sort((a,b)=>pr(a)-pr(b));
+  else if(f.sort==='desc') list.sort((a,b)=>(b.mode==='trueque'?-1:b.price)-(a.mode==='trueque'?-1:a.price));
+  else list.sort((a,b)=>b.createdAt-a.createdAt);
+  g.innerHTML = list.length ? list.map(card).join('') : `<div class="empty" style="grid-column:1/-1">No hay prendas con esos filtros.</div>`;
+}
+function viewProduct(id){
+  const p=prod(id);
+  if(!p) return `<div class="empty">Esta prenda ya no existe.</div>`;
+  const owner=userById(p.ownerId), u=me();
+  const mine=u && u.id===p.ownerId;
+  let act='';
+  if(p.status!=='disponible'){
+    act=`<div class="msg err">Esta prenda ya no está disponible (${p.status==='vendido'?'vendida':'intercambiada'}).</div>`;
+  } else if(!u){
+    act=`<p class="mut">Inicia sesión para comprar o proponer un trueque.</p>
+         <button class="btn" data-act="go" data-v="login">Iniciar sesión</button>`;
+  } else if(mine){
+    act=`<p class="mut">Esta es tu publicación. Gestiona las ofertas en Mi panel.</p>
+         <div class="actions">
+           <button class="btn ghost" data-act="go" data-v="edit" data-id="${p.id}">Editar</button>
+           <button class="btn danger" data-act="del" data-id="${p.id}">Eliminar</button>
+         </div>`;
+  } else {
+    const myItems=db.products.filter(x=>x.ownerId===u.id && x.status==='disponible');
+    if(p.mode!=='trueque'){
+      act+=`<div class="box"><b>Hacer oferta de compra</b>
+        <form data-form="offerBuy" data-id="${p.id}">
+          <div class="row" style="margin-top:10px">
+            <div><label>Importe (€)</label><input type="number" name="amount" min="1" step="0.5" value="${p.price}" required></div>
+            <div><label>Mensaje (opcional)</label><input name="message" maxlength="200" placeholder="Hola, ¿te va bien esta oferta?"></div>
+          </div>
+          <div style="margin-top:10px"><button class="btn">Enviar oferta</button></div>
+        </form></div>`;
+    }
+    if(p.mode!=='venta'){
+      act+=`<div class="box"><b>Proponer trueque</b>`+
+        (myItems.length ? `
+        <form data-form="offerSwap" data-id="${p.id}">
+          <div class="row" style="margin-top:10px">
+            <div><label>Prenda que ofreces a cambio</label>${sel('swap',myItems.map(x=>[x.id,x.title+' ('+x.size+')']),'')}</div>
+            <div><label>Mensaje (opcional)</label><input name="message" maxlength="200" placeholder="Me encantaría cambiarla por…"></div>
+          </div>
+          <div style="margin-top:10px"><button class="btn">Proponer trueque</button></div>
+        </form>` : `<p class="mut">Publica al menos una prenda para poder ofrecer un trueque.</p>
+          <button class="btn ghost sm" data-act="go" data-v="sell">+ Publicar prenda</button>`)+`</div>`;
+    }
+  }
+  return `<div class="detail">
+    <div class="thumb">${visual(p)}</div>
+    <div>
+      <span class="pill">${esc(p.cat)}</span><span class="pill">Talla ${esc(p.size)}</span><span class="pill">${esc(p.cond)}</span>
+      ${p.brand?`<span class="pill">${esc(p.brand)}</span>`:''}
+      <h1>${esc(p.title)}</h1>
+      <div style="margin-bottom:10px">${priceLine(p)}</div>
+      <p>${esc(p.desc)}</p>
+      ${p.wanted?`<p><b>Busca a cambio:</b> ${esc(p.wanted)}</p>`:''}
+      <p class="mut">Publicado por ${esc(owner?owner.name:'—')}${p.city?' · '+esc(p.city):''}</p>
+      ${act}
+    </div>
+  </div>`;
+}
+function viewForm(editId){
+  const p=editId?prod(editId):null;
+  const u=me();
+  if(editId && (!p || !u || p.ownerId!==u.id)) return `<div class="empty">No puedes editar esta prenda.</div>`;
+  const v=k=>p?esc(p[k]):'';
+  return `<h1>${p?'Editar prenda':'Publicar una prenda'}</h1>
+  <form class="form" data-form="product" data-id="${p?p.id:''}">
+    <div class="row">
+      <div class="full"><label>Título</label><input name="title" required maxlength="80" value="${v('title')}" placeholder="Ej: Vestido midi floral"></div>
+      <div><label>Categoría</label>${sel('cat',CATS,p?p.cat:CATS[0])}</div>
+      <div><label>Talla</label>${sel('size',SIZES,p?p.size:'M')}</div>
+      <div><label>Marca (opcional)</label><input name="brand" maxlength="40" value="${v('brand')}"></div>
+      <div><label>Estado</label>${sel('cond',CONDS,p?p.cond:CONDS[1])}</div>
+      <div><label>Tipo de oferta</label>${sel('mode',[['venta','Solo venta'],['trueque','Solo trueque'],['ambas','Venta o trueque']],p?p.mode:'ambas')}</div>
+      <div><label>Precio (€)</label><input type="number" name="price" min="0" step="0.5" value="${p?p.price:''}" placeholder="0"></div>
+      <div><label>Ciudad</label><input name="city" maxlength="40" value="${v('city')}" placeholder="Ej: Madrid"></div>
+      <div class="full"><label>Lo que buscas a cambio (trueque)</label><input name="wanted" maxlength="120" value="${v('wanted')}" placeholder="Ej: Camiseta básica talla M"></div>
+      <div class="full"><label>Descripción</label><textarea name="desc" maxlength="600" placeholder="Describe el estado, el uso y cualquier detalle">${v('desc')}</textarea></div>
+      <div class="full"><label>Foto ${p?'(opcional, deja vacío para mantener la actual)':''}</label><input type="file" name="photo" accept="image/*"></div>
+      <div class="full"><button class="btn">${p?'Guardar cambios':'Publicar'}</button></div>
+    </div>
+  </form>`;
+}
+function viewAuth(m){
+  if(m==='login') return `<div class="form narrow"><h1>Iniciar sesión</h1>
+    <form data-form="login"><div class="row">
+      <div class="full"><label>Email</label><input type="email" name="email" required></div>
+      <div class="full"><label>Contraseña</label><input type="password" name="pass" required></div>
+      <div class="full"><button class="btn">Entrar</button></div>
+    </div></form>
+    <p class="mut">¿No tienes cuenta? <a href="#" data-act="go" data-v="register">Regístrate</a></p>
+    <p class="mut">Cuenta demo: demo@circular.com / demo123</p></div>`;
+  return `<div class="form narrow"><h1>Crear cuenta</h1>
+    <form data-form="register"><div class="row">
+      <div class="full"><label>Nombre</label><input name="name" required maxlength="60"></div>
+      <div class="full"><label>Email</label><input type="email" name="email" required></div>
+      <div class="full"><label>Contraseña (mín. 6 caracteres)</label><input type="password" name="pass" minlength="6" required></div>
+      <div class="full"><label>Ciudad</label><input name="city" maxlength="40"></div>
+      <div class="full"><button class="btn">Registrarme</button></div>
+    </div></form>
+    <p class="mut">¿Ya tienes cuenta? <a href="#" data-act="go" data-v="login">Inicia sesión</a></p></div>`;
+}
+function offerDetail(o){
+  if(o.type==='compra') return `Compra por <b>${eur(o.amount)}</b>`;
+  const s=prod(o.swapId);
+  return `⇄ Trueque por <b>${esc(s?s.title:'(prenda eliminada)')}</b>`;
+}
+function statusPill(s){
+  const map={pendiente:'w',aceptada:'',rechazada:'w'};
+  const txt={pendiente:'Pendiente',aceptada:'Aceptada',rechazada:'Rechazada'}[s];
+  return `<span class="pill ${map[s]}">${txt}</span>`;
+}
+function viewDash(){
+  const u=me();
+  const tab=ui.tab||'pub';
+  const mine=db.products.filter(p=>p.ownerId===u.id);
+  const done=mine.filter(p=>p.status!=='disponible').length;
+  const recv=db.offers.filter(o=>{const p=prod(o.productId);return p&&p.ownerId===u.id;});
+  const sent=db.offers.filter(o=>o.buyerId===u.id);
+  const pending=recv.filter(o=>o.status==='pendiente').length;
+  const tabBtn=(k,t)=>`<button class="${tab===k?'on':''}" data-act="go" data-v="dash" data-tab="${k}">${t}</button>`;
+  let content='';
+  if(tab==='pub'){
+    content = mine.length ? `<div class="tablewrap"><table>
+      <tr><th>Prenda</th><th>Tipo</th><th>Precio</th><th>Estado</th><th></th></tr>
+      ${mine.map(p=>`<tr>
+        <td>${EMOJI[p.cat]||'👕'} ${esc(p.title)}</td>
+        <td>${MODES[p.mode]}</td>
+        <td>${p.mode==='trueque'?'—':eur(p.price)}</td>
+        <td>${p.status==='disponible'?'<span class="pill">Disponible</span>':`<span class="pill w">${p.status==='vendido'?'Vendida':'Intercambiada'}</span>`}</td>
+        <td><div class="actions" style="margin:0">
+          <button class="btn sm ghost" data-act="go" data-v="product" data-id="${p.id}">Ver</button>
+          ${p.status==='disponible'?`<button class="btn sm ghost" data-act="go" data-v="edit" data-id="${p.id}">Editar</button>
+          <button class="btn sm" data-act="sold" data-id="${p.id}">Marcar vendida</button>`:''}
+          <button class="btn sm danger" data-act="del" data-id="${p.id}">Eliminar</button>
+        </div></td></tr>`).join('')}
+    </table></div>` : `<div class="empty">Aún no has publicado nada.<br><br><button class="btn" data-act="go" data-v="sell">+ Publicar mi primera prenda</button></div>`;
+  }
+  else if(tab==='recv'){
+    content = recv.length ? `<div class="tablewrap"><table>
+      <tr><th>Prenda</th><th>Oferta</th><th>De</th><th>Mensaje</th><th>Estado</th><th></th></tr>
+      ${recv.slice().reverse().map(o=>{const p=prod(o.productId);const b=userById(o.buyerId);return `<tr>
+        <td>${esc(p?p.title:'(eliminada)')}</td>
+        <td>${offerDetail(o)}</td>
+        <td>${esc(b?b.name:'—')}${o.status==='aceptada'&&b?`<br><span class="mut">${esc(b.email)}</span>`:''}</td>
+        <td class="mut">${esc(o.message||'—')}</td>
+        <td>${statusPill(o.status)}</td>
+        <td>${o.status==='pendiente'?`<div class="actions" style="margin:0">
+          <button class="btn sm" data-act="accept" data-id="${o.id}">Aceptar</button>
+          <button class="btn sm danger" data-act="reject" data-id="${o.id}">Rechazar</button></div>`:''}</td>
+      </tr>`;}).join('')}
+    </table></div>` : `<div class="empty">Todavía no has recibido ofertas.</div>`;
+  }
+  else {
+    content = sent.length ? `<div class="tablewrap"><table>
+      <tr><th>Prenda</th><th>Tu oferta</th><th>Vendedor</th><th>Estado</th></tr>
+      ${sent.slice().reverse().map(o=>{const p=prod(o.productId);const s=p?userById(p.ownerId):null;return `<tr>
+        <td><a href="#" data-act="go" data-v="product" data-id="${o.productId}">${esc(p?p.title:'(eliminada)')}</a></td>
+        <td>${offerDetail(o)}</td>
+        <td>${esc(s?s.name:'—')}${o.status==='aceptada'&&s?`<br><span class="mut">${esc(s.email)}</span>`:''}</td>
+        <td>${statusPill(o.status)}</td></tr>`;}).join('')}
+    </table></div>` : `<div class="empty">Aún no has hecho ofertas. Explora el <a href="#" data-act="go" data-v="market">mercado</a>.</div>`;
+  }
+  return `<h1>Mi panel</h1>
+  <div class="stats">
+    <div class="stat"><b>${mine.filter(p=>p.status==='disponible').length}</b>Prendas publicadas</div>
+    <div class="stat"><b>${done}</b>Vendidas o intercambiadas</div>
+    <div class="stat"><b>${pending}</b>Ofertas pendientes</div>
+    <div class="stat"><b>${(done*CO2_PER_ITEM).toFixed(1)} kg</b>CO₂ evitado (aprox.)</div>
+  </div>
+  <div class="tabs">
+    ${tabBtn('pub','Mis publicaciones')}
+    ${tabBtn('recv','Ofertas recibidas'+(pending?` (${pending})`:''))}
+    ${tabBtn('sent','Mis ofertas')}
+  </div>
+  ${content}`;
+}
+/* ---------- RENDER & ROUTING ---------- */
+function go(v,id=null,tab=null){
+  ui.view=v; ui.id=id; if(tab) ui.tab=tab;
+  window.scrollTo(0,0);
+  render();
+}
+function render(){
+  renderNav();
+  if(['sell','edit','dash'].includes(ui.view) && !me()){
+    flash('Inicia sesión para continuar',false);
+    ui.view='login';
+  }
+  let html='';
+  switch(ui.view){
+    case 'market': html=viewMarket(); break;
+    case 'product': html=viewProduct(ui.id); break;
+    case 'sell': html=viewForm(null); break;
+    case 'edit': html=viewForm(ui.id); break;
+    case 'login': html=viewAuth('login'); break;
+    case 'register': html=viewAuth('register'); break;
+    case 'dash': html=viewDash(); break;
+  }
+  const fl=ui.flash?`<div class="msg ${ui.flash.ok?'ok':'err'}">${esc(ui.flash.t)}</div>`:'';
+  ui.flash=null;
+  app.innerHTML=fl+html;
+  if(ui.view==='market') drawGrid();
+}
+/* ---------- ACTIONS ---------- */
+function acceptOffer(id){
+  const u=me();
+  const o=db.offers.find(x=>x.id===id);
+  const p=o?prod(o.productId):null;
+  if(!o||!p||p.ownerId!==u.id){flash('Oferta no válida',false);return go('dash',null,'recv');}
+  const swap=o.swapId?prod(o.swapId):null;
+  if(p.status!=='disponible'){flash('Esta prenda ya no está disponible',false);return go('dash',null,'recv');}
+  if(o.swapId && (!swap||swap.status!=='disponible')){flash('La prenda ofrecida ya no está disponible',false);return go('dash',null,'recv');}
+  o.status='aceptada';
+  p.status=o.type==='compra'?'vendido':'intercambiado';
+  if(swap) swap.status='intercambiado';
+  const ids=[p.id,swap?swap.id:null].filter(Boolean);
+  db.offers.forEach(x=>{
+    if(x.id!==o.id && x.status==='pendiente' && (ids.includes(x.productId) || (x.swapId && ids.includes(x.swapId))))
+      x.status='rechazada';
+  });
+  save();
+  flash('¡Oferta aceptada! Ya puedes contactar con el comprador por email.');
+  go('dash',null,'recv');
+}
+const ACTIONS={
+  go:d=>go(d.v,d.id||null,d.tab||null),
+  logout:()=>{db.session=null;save();flash('Sesión cerrada');go('market');},
+  del:d=>{
+    if(!confirm('¿Eliminar esta prenda?')) return;
+    db.products=db.products.filter(p=>p.id!==d.id);
+    db.offers=db.offers.filter(o=>o.productId!==d.id && o.swapId!==d.id);
+    save(); flash('Prenda eliminada'); go('dash',null,'pub');
+  },
+  sold:d=>{
+    const p=prod(d.id);
+    if(p && me() && p.ownerId===me().id){
+      p.status='vendido';
+      db.offers.forEach(o=>{if(o.productId===p.id&&o.status==='pendiente')o.status='rechazada';});
+      save(); flash('Marcada como vendida');
+    }
+    go('dash',null,'pub');
+  },
+  accept:d=>acceptOffer(d.id),
+  reject:d=>{
+    const o=db.offers.find(x=>x.id===d.id);
+    if(o){o.status='rechazada';save();}
+    flash('Oferta rechazada'); go('dash',null,'recv');
+  }
+};
+function readImg(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const s=Math.min(1,700/Math.max(im.width,im.height));
+        const c=document.createElement('canvas');
+        c.width=Math.round(im.width*s); c.height=Math.round(im.height*s);
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg',0.75));
+      };
+      im.onerror=rej; im.src=r.result;
+    };
+    r.onerror=rej; r.readAsDataURL(file);
+  });
+}
+const FORMS={
+  register: f=>{
+    const d=Object.fromEntries(new FormData(f));
+    const email=d.email.trim().toLowerCase();
+    if(d.pass.length<6){flash('La contraseña debe tener al menos 6 caracteres',false);return render();}
+    if(db.users.some(u=>u.email===email)){flash('Ya existe una cuenta con ese email',false);return render();}
+    const u={id:uid(),name:d.name.trim(),email,pass:d.pass,city:(d.city||'').trim()};
+    db.users.push(u); db.session=u.id; save();
+    flash('¡Bienvenida, '+u.name+'! Tu cuenta está creada.');
+    go('market');
+  },
+  login: f=>{
+    const d=Object.fromEntries(new FormData(f));
+    const u=db.users.find(x=>x.email===d.email.trim().toLowerCase() && x.pass===d.pass);
+    if(!u){flash('Email o contraseña incorrectos',false);return render();}
+    db.session=u.id; save();
+    flash('Hola de nuevo, '+u.name);
+    go('market');
+  },
+  product: async f=>{
+    const u=me(); if(!u) return go('login');
+    const d=Object.fromEntries(new FormData(f));
+    const price=Number(d.price||0);
+    if(d.mode!=='trueque' && !(price>0)){flash('Pon un precio válido para vender',false);return render();}
+    const fields={
+      title:d.title.trim(), cat:d.cat, size:d.size, brand:(d.brand||'').trim(), cond:d.cond,
+      mode:d.mode, price:d.mode==='trueque'?0:price, wanted:(d.wanted||'').trim(),
+      city:(d.city||'').trim(), desc:(d.desc||'').trim()
+    };
+    let img=null;
+    const file=f.photo.files[0];
+    if(file){try{img=await readImg(file);}catch(e){flash('No se pudo leer la imagen',false);return render();}}
+    let p=f.dataset.id?prod(f.dataset.id):null;
+    if(p){
+      Object.assign(p,fields); if(img) p.img=img;
+      flash('Cambios guardados');
+    } else {
+      p={id:uid(),ownerId:u.id,status:'disponible',createdAt:Date.now(),img,...fields};
+      db.products.unshift(p);
+      flash('¡Prenda publicada!');
+    }
+    save();
+    go('product',p.id);
+  },
+  offerBuy: f=>{
+    const u=me(); const p=prod(f.dataset.id);
+    if(!u||!p) return go('login');
+    const d=Object.fromEntries(new FormData(f));
+    const amount=Number(d.amount);
+    if(!(amount>0)){flash('Importe no válido',false);return render();}
+    db.offers=db.offers.filter(o=>!(o.productId===p.id && o.buyerId===u.id && o.status==='pendiente'));
+    db.offers.push({id:uid(),productId:p.id,buyerId:u.id,type:'compra',amount,swapId:null,message:(d.message||'').trim(),status:'pendiente',createdAt:Date.now()});
+    save(); flash('Oferta enviada al vendedor'); go('dash',null,'sent');
+  },
+  offerSwap: f=>{
+    const u=me(); const p=prod(f.dataset.id);
+    if(!u||!p) return go('login');
+    const d=Object.fromEntries(new FormData(f));
+    const s=prod(d.swap);
+    if(!s||s.ownerId!==u.id||s.status!=='disponible'){flash('Elige una prenda tuya disponible',false);return render();}
+    db.offers=db.offers.filter(o=>!(o.productId===p.id && o.buyerId===u.id && o.status==='pendiente'));
+    db.offers.push({id:uid(),productId:p.id,buyerId:u.id,type:'trueque',amount:0,swapId:s.id,message:(d.message||'').trim(),status:'pendiente',createdAt:Date.now()});
+    save(); flash('Propuesta de trueque enviada'); go('dash',null,'sent');
+  }
+};
+/* ---------- EVENTS ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el) return;
+  e.preventDefault();
+  const fn=ACTIONS[el.dataset.act];
+  if(fn) fn(el.dataset);
+});
+document.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target;
+  const fn=FORMS[f.dataset.form];
+  if(fn) await fn(f);
+});
+function onFilter(e){
+  const k=e.target.dataset.filter;
+  if(!k) return;
+  ui.f[k]=e.target.value;
+  drawGrid();
+}
+document.addEventListener('input',onFilter);
+document.addEventListener('change',onFilter);
+render();
+</script>
+</body>
+</html>
