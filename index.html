@@ -304,7 +304,7 @@ function viewDash(){
       ${mine.map(p=>`<tr>
         <td>${EMOJI[p.cat]||'👕'} ${esc(p.title)}</td>
         <td>${MODES[p.mode]}</td>
-        <td>${p.mode==='trueque'?'—':eur(p.price)}</td>
+        <td>${p.mode==='trueque'?'—':Ars(p.price)}</td>
         <td>${p.status==='disponible'?'<span class="pill">Disponible</span>':`<span class="pill w">${p.status==='vendido'?'Vendida':'Intercambiada'}</span>`}</td>
         <td><div class="actions" style="margin:0">
           <button class="btn sm ghost" data-act="go" data-v="product" data-id="${p.id}">Ver</button>
